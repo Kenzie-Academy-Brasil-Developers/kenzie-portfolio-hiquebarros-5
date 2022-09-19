@@ -16,22 +16,27 @@ interface ReposType {
   name: string;
   language: string;
   description: string;
-  git_url: string;
   homepage: string;
+  html_url: string;
 }
 
 export const Project = (): JSX.Element => {
   const [repositories, setRepositories] = useState<ReposType[]>([]);
-
+  
   useEffect(() => {
     const fetchData = async () => {
       const data: Response = await fetch(
         `https://api.github.com/users/${userData.githubUser}/repos`
       )
 
-      const json = await data.json();
+      
+      const json: Array<ReposType> = await data.json();
 
-      setRepositories(json);
+      const filtered = json.filter(item => {
+        return item.name !== "hiquebarros"
+      })
+      
+      setRepositories(filtered);
 
       if (!data.ok) {
         throw data;
@@ -70,7 +75,7 @@ export const Project = (): JSX.Element => {
             {repository.description}
           </Text>
           <ProjectLinks>
-            <ProjectLink target="_blank" href={repository.git_url}>
+            <ProjectLink target="_blank" href={repository.html_url}>
               <FaGithub /> Github Code
             </ProjectLink>
             {repository.homepage && (
